@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JagoVape - Premium Vape Catalog</title>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body x-data="vapeStore">
+    
+    <!-- Navbar -->
+    <nav class="navbar sticky">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-orange"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Jago<span>Vape</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#products" @click.prevent="activeCategory = 'Devices'; scrollToProducts()">Devices</a></li>
+                <li><a href="#products" @click.prevent="activeCategory = 'Liquids'; scrollToProducts()">Liquids</a></li>
+                <li><a href="#products" @click.prevent="activeCategory = 'Accessories'; scrollToProducts()">Accessories</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <div class="cart-trigger" @click="isCartOpen = true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span class="cart-badge" x-show="cartTotalItems > 0" x-text="cartTotalItems" x-cloak></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1>Temukan Vape<br><span class="text-orange">Favoritmu</span></h1>
+            <p>Eksplorasi koleksi device premium dan liquid dengan rasa terbaik. Pesan praktis hanya melalui WhatsApp.</p>
+            <a href="#products" class="btn btn-primary btn-lg" @click.prevent="scrollToProducts()">Lihat Produk</a>
+        </div>
+    </section>
+
+    <!-- Search & Filter -->
+    <div id="products" class="container shop-controls">
+        <div class="filter-wrapper">
+            <div class="filter-tabs">
+                <template x-for="cat in ['All', 'Devices', 'Liquids', 'Accessories']">
+                    <button class="filter-tab" 
+                            :class="activeCategory === cat ? 'active' : ''"
+                            @click="activeCategory = cat"
+                            x-text="cat"></button>
+                </template>
+            </div>
+            <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" placeholder="Cari vape favorit..." x-model="searchQuery">
+            </div>
+        </div>
+    </div>
+
+    <!-- Product List -->
+    <section class="container pb-50">
+        <div class="product-grid">
+            <template x-for="product in filteredProducts" :key="product.id">
+                <div class="product-card">
+                    <div class="p-header">
+                        <span class="status-badge" 
+                              :class="product.status === 'ready' ? 'status-ready' : 'status-empty'"
+                              x-text="product.status === 'ready' ? 'Ready Stock' : 'Kosong'"></span>
+                        <img :src="product.image" :alt="product.name" class="p-image">
+                    </div>
+                    <div class="p-body">
+                        <span class="p-cat" x-text="product.category"></span>
+                        <h3 class="p-title" x-text="product.name"></h3>
+                        <p class="p-price" x-text="formatRupiah(product.price)"></p>
+                        <button class="btn btn-add" 
+                                @click="addToCart(product)"
+                                :disabled="product.status !== 'ready'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Tambah
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        
+        <!-- Empty Results -->
+        <div x-show="filteredProducts.length === 0" class="empty-results" x-cloak>
+            <p>Maaf, produk tidak tersedia...</p>
+        </div>
+    </section>
+
+    <!-- Floating Cart Icon (Mobile Only) -->
+    <div class="floating-cart" x-show="cartTotalItems > 0" @click="isCartOpen = true" x-transition x-cloak>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="count" x-text="cartTotalItems"></span>
+    </div>
+
+    <!-- Cart Overlay/Drawer -->
+    <div class="cart-overlay" :class="isCartOpen ? 'open' : ''" @click.self="isCartOpen = false" x-cloak>
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h2>Keranjang</h2>
+                <button class="btn-close" @click="isCartOpen = false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div class="cart-body">
+                <template x-if="cart.length === 0">
+                    <div class="empty-cart">
+                        <p>Keranjang Anda kosong</p>
+                    </div>
+                </template>
+                
+                <template x-for="item in cart" :key="item.id">
+                    <div class="cart-item">
+                        <img :src="item.image" :alt="item.name" class="cart-item-img">
+                        <div class="cart-item-info">
+                            <h4 x-text="item.name"></h4>
+                            <p class="text-orange" x-text="formatRupiah(item.price)"></p>
+                            <div class="qty-wrapper">
+                                <button class="qty-btn" @click="updateQty(item.id, -1)">-</button>
+                                <span class="qty-val" x-text="item.qty"></span>
+                                <button class="qty-btn" @click="updateQty(item.id, 1)">+</button>
+                                <button class="btn-remove" @click="removeFromCart(item.id)">
+                                    Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <div class="cart-footer" x-show="cart.length > 0">
+                <div class="cart-total">
+                    <span>Total</span>
+                    <span x-text="formatRupiah(cartTotalAmount)"></span>
+                </div>
+                <button class="btn btn-checkout" @click="checkoutWA()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.301-.15-1.767-.872-2.04-.971-.272-.099-.47-.15-.667.15-.198.3-.765.961-.937 1.161-.172.199-.344.223-.646.075-.303-.15-1.275-.47-2.43-1.503-.898-.802-1.503-1.792-1.68-2.091-.172-.3-.018-.462.132-.61.135-.133.303-.352.454-.528.152-.176.203-.299.303-.499.1-.2.05-.375-.025-.525-.075-.15-.667-1.606-.913-2.196-.24-.576-.48-.498-.667-.507-.173-.008-.371-.01-.57-.01-.199 0-.522.074-.796.372-.272.298-1.042 1.018-1.042 2.481 0 1.462 1.066 2.872 1.214 3.072.148.199 2.098 3.203 5.084 4.493.71.307 1.265.49 1.696.627.712.226 1.36.194 1.872.118.571-.085 1.767-.721 2.016-1.417.248-.696.248-1.292.174-1.416-.075-.124-.273-.199-.574-.35zM12.004 20.151c-1.62 0-3.21-.433-4.605-1.25l-.332-.197-3.419.897.914-3.333-.217-.345a8.239 8.239 0 0 1-1.263-4.321c0-4.545 3.697-8.243 8.242-8.243 2.2 0 4.269.858 5.823 2.413a8.195 8.195 0 0 1 2.414 5.83c0 4.547-3.698 8.242-8.242 8.242zM12.004 2c-5.518 0-10.005 4.486-10.005 10.004 0 1.764.461 3.486 1.334 5.011L2 22l5.122-1.343a9.962 9.962 0 0 0 4.882 1.272h.005c5.517 0 10.003-4.486 10.003-10.004 0-2.673-1.04-5.185-2.929-7.073A9.92 9.92 0 0 0 12.004 2z"/></svg>
+                    Order via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" :class="showToast ? 'show' : ''" x-cloak>
+        <p>Produk ditambahkan ke keranjang</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
