@@ -5,7 +5,7 @@ document.addEventListener('alpine:init', () => {
         activeCategory: 'All',
         showToast: false,
         cart: [],
-        phoneWA: '6281234567890', // Format: Kode negara + Nomor (tanpa + / 0 di depan)
+        phoneWA: '6281313362467', // Format: Kode negara + Nomor (tanpa + / 0 di depan)
 
         products: [
             {
