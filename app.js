@@ -157,7 +157,7 @@ document.addEventListener('alpine:init', () => {
             text += `%0A*Total: ${this.formatRupiah(this.cartTotalAmount)}*%0A%0A`;
             text += `Mohon info ketersediaan stoknya. Terima kasih!`;
 
-            const url = `https://wa.me/${this.phoneWA}?text=${text}`;
+            const url = `https://wa.me/6281313362467?text=${text}`;
             window.open(url, '_blank');
         }
     }));
