@@ -638,3 +638,54 @@ body {
     padding: 100px 0;
     color: var(--text-muted);
 }
+/* 
+    SKELETON LOADER ANIMATION 
+*/
+.skeleton-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+@media (min-width: 1024px) {
+    .skeleton-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+    }
+}
+
+.skeleton-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.skeleton-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: linear-gradient(90deg, #252525 25%, #333 50%, #252525 75%);
+    background-size: 200% 100%;
+    border-radius: var(--radius-md);
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-text {
+    height: 15px;
+    background: linear-gradient(90deg, #252525 25%, #333 50%, #252525 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-title { width: 80%; }
+.skeleton-price { width: 50%; height: 20px; margin-top: auto; }
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

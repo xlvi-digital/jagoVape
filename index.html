@@ -72,22 +72,35 @@
 
     <!-- Product List -->
     <section class="container pb-50">
-        <div class="product-grid">
+        <!-- Skeleton Loader (Muncul saat isLoading = true) -->
+        <div class="skeleton-wrapper" x-show="isLoading" x-cloak>
+            <template x-for="i in 4">
+                <div class="skeleton-card">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text skeleton-title"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text skeleton-price"></div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Real Product Grid (Muncul saat isLoading = false) -->
+        <div class="product-grid" x-show="!isLoading" x-transition x-cloak>
             <template x-for="product in filteredProducts" :key="product.id">
                 <div class="product-card">
                     <div class="p-header">
                         <span class="status-badge" 
-                              :class="product.status === 'ready' ? 'status-ready' : 'status-empty'"
-                              x-text="product.status === 'ready' ? 'Ready Stock' : 'Kosong'"></span>
-                        <img :src="product.image" :alt="product.name" class="p-image">
+                              :class="product.status_stock === 'ready' ? 'status-ready' : 'status-empty'"
+                              x-text="product.status_stock === 'ready' ? 'Ready Stock' : 'Habis'"></span>
+                        <img :src="product.url_gambar" :alt="product.nama" class="p-image">
                     </div>
                     <div class="p-body">
-                        <span class="p-cat" x-text="product.category"></span>
-                        <h3 class="p-title" x-text="product.name"></h3>
-                        <p class="p-price" x-text="formatRupiah(product.price)"></p>
+                        <span class="p-cat" x-text="product.kategori"></span>
+                        <h3 class="p-title" x-text="product.nama"></h3>
+                        <p class="p-price" x-text="formatRupiah(product.harga)"></p>
                         <button class="btn btn-add" 
                                 @click="addToCart(product)"
-                                :disabled="product.status !== 'ready'">
+                                :disabled="product.status_stock !== 'ready'">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             Tambah
                         </button>
@@ -97,8 +110,8 @@
         </div>
         
         <!-- Empty Results -->
-        <div x-show="filteredProducts.length === 0" class="empty-results" x-cloak>
-            <p>Maaf, produk tidak tersedia...</p>
+        <div x-show="!isLoading && filteredProducts.length === 0" class="empty-results" x-cloak>
+            <p>Maaf, produk tidak ditemukan...</p>
         </div>
     </section>
 
@@ -127,10 +140,10 @@
                 
                 <template x-for="item in cart" :key="item.id">
                     <div class="cart-item">
-                        <img :src="item.image" :alt="item.name" class="cart-item-img">
+                        <img :src="item.url_gambar" :alt="item.nama" class="cart-item-img">
                         <div class="cart-item-info">
-                            <h4 x-text="item.name"></h4>
-                            <p class="text-orange" x-text="formatRupiah(item.price)"></p>
+                            <h4 x-text="item.nama"></h4>
+                            <p class="text-orange" x-text="formatRupiah(item.harga)"></p>
                             <div class="qty-wrapper">
                                 <button class="qty-btn" @click="updateQty(item.id, -1)">-</button>
                                 <span class="qty-val" x-text="item.qty"></span>

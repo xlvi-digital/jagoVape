@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | jagoVape</title>
+    <!-- Font Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Link CSS existing agar desain seragam -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-section { padding: 120px 0 60px; min-height: 100vh; }
+        .form-container {
+            background: var(--bg-surface);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: var(--radius-md);
+            color: white;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 106, 0, 0.05);
+        }
+        .admin-header { text-align: center; margin-bottom: 40px; }
+        .admin-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+        .admin-header p { color: var(--text-muted); }
+        
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 106, 0, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-submit {
+            width: 100%;
+            margin-top: 20px;
+            border: none;
+            padding: 18px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay">
+        <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+            <div class="spinner"></div>
+            <p style="margin-top: 20px; font-weight: 600; color: white;">Sedang menyimpan ke Google Sheets...</p>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">jago<span>Vape</span></a>
+            <a href="index.html" class="btn btn-add" style="width: auto; padding: 10px 25px;">Lihat Website</a>
+        </div>
+    </nav>
+
+    <section class="admin-section">
+        <div class="container">
+            <div class="admin-header">
+                <h1>Panel Input Produk</h1>
+                <p>Tambah stok terbaru ke katalog website secara otomatis.</p>
+            </div>
+
+            <div class="form-container">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label>Nama Produk</label>
+                        <input type="text" id="nama" placeholder="Contoh: Vaporesso XROS 4" required>
+                    </div>
+
+                    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label>Kategori</label>
+                            <select id="kategori" required>
+                                <option value="Devices">Devices</option>
+                                <option value="Liquids">Liquids</option>
+                                <option value="Accessories">Accessories</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Harga (Rupiah)</label>
+                            <input type="number" id="harga" placeholder="Contoh: 350000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deskripsi Produk</label>
+                        <textarea id="deskripsi" rows="3" placeholder="Jelaskan detail produk di sini..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL Gambar</label>
+                        <input type="url" id="urlGambar" placeholder="https://link-gambar.com/produk.jpg" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status Stock</label>
+                        <select id="statusStock" required>
+                            <option value="ready">Ready Stock</option>
+                            <option value="kosong">Habis / Out of Stock</option>
+                            <option value="preorder">Pre-Order</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        Simpan ke Google Sheets
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div id="adminToast" class="toast">Produk berhasil ditambahkan!</div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzETqo3vc65WQ0FNOb1tlRV1S7cu-Eh3S-2v-yKQqqGRapHmDhZdKIpxEbYB-by7cdT/exec';
+        const form = document.querySelector('#productForm');
+        const overlay = document.querySelector('#loadingOverlay');
+        const toast = document.querySelector('#adminToast');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            // Tampilkan loading
+            overlay.style.display = 'flex';
+
+            // Kumpulkan data (disesuaikan dengan label di Apps Script kamu)
+            const data = {
+                nama: document.querySelector('#nama').value,
+                kategori: document.querySelector('#kategori').value,
+                harga: parseInt(document.querySelector('#harga').value),
+                deskripsi: document.querySelector('#deskripsi').value,
+                url_gambar: document.querySelector('#urlGambar').value,   // diubah
+                status_stock: document.querySelector('#statusStock').value // diubah
+            };
+
+            // Kirim ke Google Apps Script
+            fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                overlay.style.display = 'none';
+                // Google Apps Script redirects might cause issues with direct JSON response check in some fetch versions
+                // but usually ContentService handles this.
+                return response.json();
+            })
+            .then(result => {
+                if(result.result === 'success') {
+                    showToast("Produk Berhasil Ditambahkan!");
+                    form.reset();
+                } else {
+                    alert("Gagal: " + (result.error || "Terjadi kesalahan."));
+                }
+            })
+            .catch(error => {
+                overlay.style.display = 'none';
+                console.error('Error!', error.message);
+                // Karena CORS redirect script.google.com seringkali dianggap error oleh browser
+                // meskipun data masuk. Namun dengan doPost yang benar harusnya lancar.
+                alert("Data sedang diproses. Mohon cek Google Sheets Anda dalam beberapa detik.");
+            });
+        });
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
