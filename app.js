@@ -1,7 +1,7 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('vapeStore', () => ({
         // Apps Script Web App URL (PENTING: Gunakan URL dari Deployment terbaru)
-        scriptURL: 'https://script.google.com/macros/s/AKfycbzETqo3vc65WQ0FNOb1tlRV1S7cu-Eh3S-2v-yKQqqGRapHmDhZdKIpxEbYB-by7cdT/exec',
+        scriptURL: 'https://script.google.com/macros/s/AKfycbyHLao0v30aclBvlg38BZ5mfEIKoVIpTVWKxpqlvaGHBR-rkPJlwzqsqQyYZz7EsNN4/exec',
 
         isLoading: true,
         isCartOpen: false,

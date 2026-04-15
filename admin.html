@@ -1,25 +1,83 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | jagoVape</title>
     <!-- Font Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- Link CSS existing agar desain seragam -->
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-section { padding: 120px 0 60px; min-height: 100vh; }
+        .admin-section {
+            padding: 120px 0 60px;
+            min-height: 100vh;
+        }
+
+        /* Tab System */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .form-container {
             background: var(--bg-surface);
             padding: 40px;
             border-radius: var(--radius-lg);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             box-shadow: var(--shadow);
         }
-        .form-group { margin-bottom: 20px; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -27,7 +85,10 @@
             font-weight: 600;
             color: var(--text-muted);
         }
-        .form-group input, .form-group select, .form-group textarea {
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -38,19 +99,84 @@
             outline: none;
             transition: var(--transition);
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: var(--primary);
             background: rgba(255, 106, 0, 0.05);
         }
-        .admin-header { text-align: center; margin-bottom: 40px; }
-        .admin-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
-        .admin-header p { color: var(--text-muted); }
-        
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            color: var(--text-muted);
+        }
+
+        /* Bulk Area */
+        .bulk-textarea {
+            min-height: 250px;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Preview Table */
+        .preview-container {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
         /* Loading Overlay */
         #loadingOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
@@ -68,8 +194,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .btn-submit {
@@ -80,14 +211,23 @@
             font-size: 16px;
             cursor: pointer;
         }
+
+        .progress-info {
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
     </style>
 </head>
+
 <body>
 
     <div id="loadingOverlay">
         <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
             <div class="spinner"></div>
-            <p style="margin-top: 20px; font-weight: 600; color: white;">Sedang menyimpan ke Google Sheets...</p>
+            <p id="loadingText" style="margin-top: 20px; font-weight: 600; color: white;">Sedang menyimpan ke Google
+                Sheets...</p>
         </div>
     </div>
 
@@ -105,51 +245,125 @@
                 <p>Tambah stok terbaru ke katalog website secara otomatis.</p>
             </div>
 
-            <div class="form-container">
-                <form id="productForm">
-                    <div class="form-group">
-                        <label>Nama Produk</label>
-                        <input type="text" id="nama" placeholder="Contoh: Vaporesso XROS 4" required>
-                    </div>
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('single')">Tambah Satuan</button>
+                <button class="tab-btn" onclick="switchTab('bulk')">Input Masal (Bulk)</button>
+            </div>
 
-                    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div>
-                            <label>Kategori</label>
-                            <select id="kategori" required>
-                                <option value="Devices">Devices</option>
-                                <option value="Liquids">Liquids</option>
-                                <option value="Accessories">Accessories</option>
+            <!-- Single Input Tab -->
+            <div id="single-tab" class="tab-content active">
+                <div class="form-container">
+                    <form id="productForm">
+                        <div class="form-group">
+                            <label>Nama Produk</label>
+                            <input type="text" id="nama" placeholder="Contoh: Vaporesso XROS 4" required>
+                        </div>
+
+                        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label>Kategori</label>
+                                <select id="kategori" required>
+                                    <option value="Devices">Devices</option>
+                                    <option value="Liquids">Liquids</option>
+                                    <option value="Accessories">Accessories</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Harga (Rupiah)</label>
+                                <input type="number" id="harga" placeholder="Contoh: 350000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Deskripsi Produk</label>
+                            <textarea id="deskripsi" rows="3" placeholder="Jelaskan detail produk di sini..."
+                                required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Gambar Produk</label>
+                            <div class="upload-wrapper"
+                                style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 10px;">
+                                <div id="imgPreview" class="img-preview"
+                                    style="width: 80px; height: 80px; border-radius: var(--radius-md); background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </div>
+                                <div style="flex-grow: 1;">
+                                    <input type="file" id="imageFile" accept="image/*" style="display: none;"
+                                        onchange="handleFileSelect(this)">
+                                    <button type="button" class="btn btn-add"
+                                        style="margin-bottom: 8px; font-size: 13px;"
+                                        onclick="document.getElementById('imageFile').click()">
+                                        Pilih File Gambar
+                                    </button>
+                                    <p id="fileName" style="font-size: 11px; color: var(--text-muted);">Maks. 5MB (.jpg,
+                                        .png)</p>
+                                </div>
+                            </div>
+                            <input type="url" id="urlGambar" placeholder="Atau tempel link gambar di sini..." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status Stock</label>
+                            <select id="statusStock" required>
+                                <option value="ready">Ready Stock</option>
+                                <option value="kosong">Habis / Out of Stock</option>
+                                <option value="preorder">Pre-Order</option>
                             </select>
                         </div>
-                        <div>
-                            <label>Harga (Rupiah)</label>
-                            <input type="number" id="harga" placeholder="Contoh: 350000" required>
-                        </div>
-                    </div>
 
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            Simpan ke Google Sheets
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bulk Input Tab -->
+            <div id="bulk-tab" class="tab-content">
+                <div class="form-container">
                     <div class="form-group">
-                        <label>Deskripsi Produk</label>
-                        <textarea id="deskripsi" rows="3" placeholder="Jelaskan detail produk di sini..." required></textarea>
+                        <label>Paste Data Excel / Google Sheets</label>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+                            Urutan Kolom: Nama | Kategori | Harga | Deskripsi | Link Gambar | Status
+                        </p>
+                        <textarea id="bulkData" class="bulk-textarea" placeholder="Tempel data di sini..."></textarea>
                     </div>
-
-                    <div class="form-group">
-                        <label>URL Gambar</label>
-                        <input type="url" id="urlGambar" placeholder="https://link-gambar.com/produk.jpg" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Status Stock</label>
-                        <select id="statusStock" required>
-                            <option value="ready">Ready Stock</option>
-                            <option value="kosong">Habis / Out of Stock</option>
-                            <option value="preorder">Pre-Order</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-submit">
-                        Simpan ke Google Sheets
+                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="processBulk()">
+                        Proses Data
                     </button>
-                </form>
+
+                    <div id="previewContainer" class="preview-container">
+                        <h3 style="margin-bottom: 15px; font-size: 18px;">Preview Data (<span id="rowCount">0</span>
+                            Produk)</h3>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nama</th>
+                                        <th>Kategori</th>
+                                        <th>Harga</th>
+                                        <th>Deskripsi</th>
+                                        <th>Gambar</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewBody">
+                                    <!-- Data rows here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-submit" onclick="uploadAllBulk()">
+                            Upload Semua ke Google Sheets
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -158,54 +372,227 @@
     <div id="adminToast" class="toast">Produk berhasil ditambahkan!</div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzETqo3vc65WQ0FNOb1tlRV1S7cu-Eh3S-2v-yKQqqGRapHmDhZdKIpxEbYB-by7cdT/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHLao0v30aclBvlg38BZ5mfEIKoVIpTVWKxpqlvaGHBR-rkPJlwzqsqQyYZz7EsNN4/exec';
         const form = document.querySelector('#productForm');
         const overlay = document.querySelector('#loadingOverlay');
+        const loadingText = document.querySelector('#loadingText');
         const toast = document.querySelector('#adminToast');
 
+        let bulkParsedData = [];
+
+        // --- IMAGE UPLOAD LOGIC ---
+        async function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Preview Lokal
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('imgPreview');
+                preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            };
+            reader.readAsDataURL(file);
+
+            // Upload ke GAS
+            await performImageUpload(file);
+        }
+
+        async function performImageUpload(file) {
+            overlay.style.display = 'flex';
+            loadingText.textContent = "Sedang mengunggah gambar...";
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Data = reader.result.split(',')[1];
+                const payload = {
+                    action: 'uploadImage',
+                    filename: file.name,
+                    mimeType: file.type,
+                    data: base64Data
+                };
+
+                try {
+                    const response = await fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.result === 'success') {
+                        document.getElementById('urlGambar').value = result.url;
+                        showToast("Gambar berhasil diunggah!");
+                    } else {
+                        alert("Gagal upload gambar: " + result.error);
+                    }
+                } catch (error) {
+                    console.error("Upload error:", error);
+                    alert("Terjadi kesalahan saat mengunggah gambar.");
+                } finally {
+                    overlay.style.display = 'none';
+                }
+            };
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tab === 'single') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('single-tab').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('bulk-tab').classList.add('active');
+            }
+        }
+
+        // --- SINGLE UPLOAD LOGIC ---
         form.addEventListener('submit', e => {
             e.preventDefault();
-            
-            // Tampilkan loading
             overlay.style.display = 'flex';
+            loadingText.textContent = "Sedang menyimpan ke Google Sheets...";
 
-            // Kumpulkan data (disesuaikan dengan label di Apps Script kamu)
             const data = {
                 nama: document.querySelector('#nama').value,
                 kategori: document.querySelector('#kategori').value,
                 harga: parseInt(document.querySelector('#harga').value),
                 deskripsi: document.querySelector('#deskripsi').value,
-                url_gambar: document.querySelector('#urlGambar').value,   // diubah
-                status_stock: document.querySelector('#statusStock').value // diubah
+                url_gambar: document.querySelector('#urlGambar').value,
+                status_stock: document.querySelector('#statusStock').value
             };
 
-            // Kirim ke Google Apps Script
-            fetch(scriptURL, { 
-                method: 'POST', 
+            fetch(scriptURL, {
+                method: 'POST',
                 body: JSON.stringify(data)
             })
-            .then(response => {
-                overlay.style.display = 'none';
-                // Google Apps Script redirects might cause issues with direct JSON response check in some fetch versions
-                // but usually ContentService handles this.
-                return response.json();
-            })
-            .then(result => {
-                if(result.result === 'success') {
-                    showToast("Produk Berhasil Ditambahkan!");
-                    form.reset();
-                } else {
-                    alert("Gagal: " + (result.error || "Terjadi kesalahan."));
-                }
-            })
-            .catch(error => {
-                overlay.style.display = 'none';
-                console.error('Error!', error.message);
-                // Karena CORS redirect script.google.com seringkali dianggap error oleh browser
-                // meskipun data masuk. Namun dengan doPost yang benar harusnya lancar.
-                alert("Data sedang diproses. Mohon cek Google Sheets Anda dalam beberapa detik.");
-            });
+                .then(response => response.json())
+                .then(result => {
+                    overlay.style.display = 'none';
+                    if (result.result === 'success') {
+                        showToast("Produk Berhasil Ditambahkan!");
+                        form.reset();
+                    } else {
+                        alert("Gagal: " + (result.error || "Terjadi kesalahan."));
+                    }
+                })
+                .catch(error => {
+                    overlay.style.display = 'none';
+                    console.error('Error!', error.message);
+                    alert("Data sedang diproses. Mohon cek Google Sheets Anda dalam beberapa detik.");
+                });
         });
+
+        // --- BULK UPLOAD LOGIC ---
+        function normalizeStatus(val) {
+            const v = (val || "").toLowerCase().trim();
+            if (v.includes("ready")) return "ready";
+            if (v.includes("habis") || v.includes("kosong") || v.includes("out")) return "kosong";
+            if (v.includes("pre") || v.includes("pesan")) return "preorder";
+            return "ready"; // Default
+        }
+
+        function normalizeCategory(val) {
+            const v = (val || "").toLowerCase().trim();
+            if (v.includes("dev")) return "Devices";
+            if (v.includes("liq")) return "Liquids";
+            if (v.includes("acc")) return "Accessories";
+            return "Devices"; // Default
+        }
+
+        function processBulk() {
+            const rawText = document.getElementById('bulkData').value.trim();
+            if (!rawText) {
+                alert("Silakan tempel data terlebih dahulu!");
+                return;
+            }
+
+            const rows = rawText.split('\n');
+            bulkParsedData = [];
+
+            rows.forEach(row => {
+                if (!row.trim()) return;
+
+                // Pisahkan berdasarkan Tab (\t)
+                const cols = row.split('\t');
+
+                if (cols.length >= 2) { // Minimal ada Nama dan Kategori
+                    const rawHarga = cols[2] ? cols[2].replace(/[^0-9]/g, '') : "0";
+
+                    bulkParsedData.push({
+                        nama: (cols[0] || "").trim(),
+                        kategori: normalizeCategory(cols[1]),
+                        harga: parseInt(rawHarga) || 0,
+                        deskripsi: (cols[3] || "").trim(),
+                        url_gambar: (cols[4] || "").trim(),
+                        status_stock: normalizeStatus(cols[5])
+                    });
+                }
+            });
+
+            renderPreview();
+        }
+
+        function renderPreview() {
+            const tbody = document.getElementById('previewBody');
+            const container = document.getElementById('previewContainer');
+            const rowCount = document.getElementById('rowCount');
+
+            tbody.innerHTML = '';
+            rowCount.textContent = bulkParsedData.length;
+
+            const statusLabels = {
+                'ready': 'Ready Stock',
+                'kosong': 'Habis',
+                'preorder': 'Pre-Order'
+            };
+
+            bulkParsedData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.nama}</td>
+                    <td>${item.kategori}</td>
+                    <td>Rp${item.harga.toLocaleString('id-ID')}</td>
+                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.deskripsi}</td>
+                    <td style="font-size: 10px; opacity: 0.6;">${item.url_gambar.substring(0, 30)}...</td>
+                    <td><span class="status-badge ${item.status_stock === 'ready' ? 'status-ready' : 'status-empty'}" style="position: static; display: inline-block;">${statusLabels[item.status_stock] || item.status_stock}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function uploadAllBulk() {
+            if (bulkParsedData.length === 0) return;
+
+            overlay.style.display = 'flex';
+            const total = bulkParsedData.length;
+
+            for (let i = 0; i < total; i++) {
+                const currentItem = bulkParsedData[i];
+                loadingText.textContent = `Mengunggah ${i + 1} dari ${total} produk...`;
+
+                try {
+                    await fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify(currentItem)
+                    });
+                } catch (e) {
+                    console.error("Gagal mengunggah item ke-" + (i + 1), e);
+                }
+            }
+
+            overlay.style.display = 'none';
+            showToast(`Berhasil! ${total} Produk telah diunggah.`);
+
+            // Reset Bulk
+            document.getElementById('bulkData').value = '';
+            document.getElementById('previewContainer').style.display = 'none';
+            bulkParsedData = [];
+        }
 
         function showToast(msg) {
             toast.textContent = msg;
@@ -214,4 +601,5 @@
         }
     </script>
 </body>
+
 </html>
