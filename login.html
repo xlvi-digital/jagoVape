@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin | jagoVape</title>
+    <!-- Font Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Link CSS existing -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+            overflow: hidden;
+        }
+
+        .login-card {
+            background: var(--bg-surface);
+            padding: 50px 40px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(255, 106, 0, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header .logo {
+            font-size: 32px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 18px;
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 106, 0, 0.05);
+            box-shadow: 0 0 15px rgba(255, 106, 0, 0.1);
+        }
+
+        .input-wrapper input:focus+label {
+            color: var(--primary);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        .btn-login:hover::after {
+            left: 100%;
+            top: 100%;
+        }
+
+        .status-msg {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 20px;
+            transition: var(--transition);
+        }
+
+        .msg-error {
+            color: var(--status-empty);
+        }
+
+        .msg-success {
+            color: var(--status-ready);
+        }
+
+        /* Background Glows */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: 1;
+        }
+
+        .glow-1 {
+            top: -100px;
+            left: -100px;
+        }
+
+        .glow-2 {
+            bottom: -100px;
+            right: -100px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <a href="index.html" class="logo">jago<span>Vape</span></a>
+            <p>Panel Kontrol Admin</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" placeholder="Masukkan username" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="Masukkan password" required
+                        autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login">
+                <span class="btn-text">Masuk</span>
+                <div class="spinner" id="loginSpinner"></div>
+            </button>
+        </form>
+
+        <div id="statusMsg" class="status-msg"></div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxr2ZJm6cHKU4U89Pj5vSi-sGBspkHPQNDkjRdA-A5wkzJJGbMJgHLtQg5LxV7th1kDuA/exec';
+        const loginForm = document.getElementById('loginForm');
+        const statusMsg = document.getElementById('statusMsg');
+        const loginSpinner = document.getElementById('loginSpinner');
+        const btnText = document.querySelector('.btn-text');
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                `;
+            }
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Reset UI
+            statusMsg.textContent = '';
+            statusMsg.className = 'status-msg';
+            loginSpinner.style.display = 'block';
+            btnText.style.opacity = '0.5';
+            loginForm.querySelectorAll('input, button').forEach(el => el.disabled = true);
+
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.result === 'success') {
+                    statusMsg.textContent = 'Login Berhasil! Mengalihkan...';
+                    statusMsg.classList.add('msg-success');
+
+                    // Simpan token di sessionStorage
+                    sessionStorage.setItem('adminToken', result.token || 'authenticated');
+
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1500);
+                } else {
+                    statusMsg.textContent = result.error || 'Username atau password salah.';
+                    statusMsg.classList.add('msg-error');
+                    resetForm();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                statusMsg.textContent = 'Terjadi kesalahan koneksi.';
+                statusMsg.classList.add('msg-error');
+                resetForm();
+            }
+        });
+
+        function resetForm() {
+            loginSpinner.style.display = 'none';
+            btnText.style.opacity = '1';
+            loginForm.querySelectorAll('input, button').forEach(el => el.disabled = false);
+        }
+    </script>
+</body>
+
+</html>

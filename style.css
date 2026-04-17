@@ -2,20 +2,24 @@
     DESIGN SYSTEM & VARIABLES 
 */
 :root {
-    --bg-dark: #121212;
-    --bg-surface: #1f1f1f;
-    --bg-nav: rgba(18, 18, 18, 0.85);
-    --primary: #ff6a00;
-    --primary-hover: #e65f00;
-    --primary-glow: rgba(255, 106, 0, 0.3);
+    --bg-dark: #080808;
+    --bg-surface: rgba(20, 20, 20, 0.4);
+    --bg-nav: rgba(10, 10, 10, 0.6);
+    --primary: #ff6b00;
+    --primary-hover: #ff8533;
+    --primary-glow: rgba(255, 107, 0, 0.5);
+    --neon-border: 1px solid var(--primary);
+    --neon-glow: 0 0 15px var(--primary-glow);
     --text-white: #ffffff;
-    --text-muted: #a0a0a0;
+    --text-light: #f0f0f0;
+    --text-muted: #888888;
     --status-ready: #00ff88;
     --status-empty: #ff4d4d;
     --radius-lg: 20px;
     --radius-md: 12px;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --glass: blur(20px);
 }
 
 /* 
@@ -40,6 +44,15 @@ body {
     color: var(--text-white);
     line-height: 1.6;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+    font-family: 'Playfair Display', serif;
+}
+
+.font-premium {
+    font-family: 'Montserrat', sans-serif;
 }
 
 .container {
@@ -61,11 +74,21 @@ body {
     left: 0;
     width: 100%;
     z-index: 1000;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: var(--transition);
+    padding: 20px 0;
+    border-bottom: 1px solid transparent;
+}
+
+.navbar.scrolled {
     background: var(--bg-nav);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: var(--glass);
+    -webkit-backdrop-filter: var(--glass);
     padding: 15px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .nav-container {
@@ -77,14 +100,15 @@ body {
 .logo {
     text-decoration: none;
     color: white;
-    font-size: 22px;
-    font-weight: 800;
+    font-size: 26px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-family: 'Playfair Display', serif;
 }
 
-.logo span { color: var(--primary); }
+.logo span { color: var(--primary); font-family: 'Playfair Display', serif; margin-left: -5px; }
 
 .nav-menu {
     display: none; /* Hide on mobile */
@@ -111,34 +135,39 @@ body {
 
 .cart-trigger {
     position: relative;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px;
-    border-radius: 12px;
+    background: var(--bg-surface);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: var(--neon-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: var(--transition);
+    box-shadow: var(--neon-glow);
 }
 
 .cart-trigger:hover {
-    background: var(--primary-glow);
-    border-color: var(--primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 25px var(--primary-glow);
 }
 
 .cart-badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -2px;
+    right: -2px;
     background: var(--primary);
     color: white;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 10px var(--primary-glow);
+    border: 2px solid var(--bg-dark);
 }
 
 /* 
@@ -146,11 +175,11 @@ body {
 */
 .hero {
     position: relative;
-    height: 85vh;
-    min-height: 550px;
+    height: 90vh;
+    min-height: 600px;
     display: flex;
     align-items: center;
-    background: url('https://images.unsplash.com/photo-1559819614-81fea9efd090?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
+    background: url('hero-bg.png') no-repeat center center/cover;
     overflow: hidden;
 }
 
@@ -201,19 +230,21 @@ body {
 .btn-primary {
     background: var(--primary);
     color: white;
-    box-shadow: 0 10px 25px var(--primary-glow);
+    box-shadow: 0 0 20px var(--primary-glow);
 }
 
 .btn-primary:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px var(--primary-glow);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 40px var(--primary-glow);
     background: var(--primary-hover);
 }
 
 .btn-lg {
-    padding: 18px 40px;
+    padding: 18px 50px;
     font-size: 16px;
-    border-radius: var(--radius-lg);
+    border-radius: 50px;
+    border: var(--neon-border);
+    backdrop-filter: blur(5px);
 }
 
 .btn-add {
@@ -258,11 +289,11 @@ body {
 .filter-tabs::-webkit-scrollbar { display: none; }
 
 .filter-tab {
-    padding: 10px 20px;
+    padding: 10px 25px;
     background: var(--bg-surface);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50px;
-    color: var(--text-muted);
+    color: white;
     font-family: inherit;
     font-weight: 600;
     font-size: 14px;
@@ -272,9 +303,10 @@ body {
 }
 
 .filter-tab.active {
-    background: var(--primary);
+    background: transparent;
     color: white;
-    border-color: var(--primary);
+    border: var(--neon-border);
+    box-shadow: var(--neon-glow);
 }
 
 .search-box {
@@ -285,9 +317,9 @@ body {
 .search-box input {
     width: 100%;
     background: var(--bg-surface);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 15px 20px 15px 50px;
-    border-radius: var(--radius-md);
+    border-radius: 50px;
     color: white;
     font-family: inherit;
     outline: none;
@@ -296,7 +328,7 @@ body {
 
 .search-box input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(255, 106, 0, 0.1);
+    box-shadow: var(--neon-glow);
 }
 
 .search-box svg {
@@ -304,7 +336,7 @@ body {
     left: 18px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
+    color: var(--primary);
 }
 
 /* 
@@ -319,7 +351,8 @@ body {
 .product-card {
     background: var(--bg-surface);
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: var(--neon-border);
+    box-shadow: var(--shadow);
     overflow: hidden;
     transition: var(--transition);
     display: flex;
@@ -327,21 +360,24 @@ body {
 }
 
 .product-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(255, 106, 0, 0.2);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(255, 107, 0, 0.2);
 }
 
 .p-header {
     position: relative;
     aspect-ratio: 1/1;
-    background: #252525;
+    background: rgba(255,255,255,0.02);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .p-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: var(--transition);
 }
 
@@ -351,19 +387,33 @@ body {
 
 .status-badge {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 15px;
+    left: 15px;
     z-index: 5;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 10px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.status-ready { background: rgba(0, 255, 136, 0.15); color: var(--status-ready); }
-.status-empty { background: rgba(255, 77, 77, 0.15); color: var(--status-empty); }
+.status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-ready { background: rgba(0, 255, 136, 0.1); color: var(--status-ready); }
+.status-ready::before { background: var(--status-ready); box-shadow: 0 0 10px var(--status-ready); }
+
+.status-empty { background: rgba(255, 77, 77, 0.1); color: var(--status-empty); }
+.status-empty::before { background: var(--status-empty); box-shadow: 0 0 10px var(--status-empty); }
 
 .p-body {
     padding: 15px;
