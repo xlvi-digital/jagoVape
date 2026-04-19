@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="style.css">
     <!-- SheetJS for Excel/CSV Parsing -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    
+
     <style>
         .admin-section {
             padding: 120px 0 60px;
@@ -286,7 +286,8 @@
             position: relative;
         }
 
-        .drop-zone:hover, .drop-zone.dragover {
+        .drop-zone:hover,
+        .drop-zone.dragover {
             border-color: var(--primary);
             background: rgba(255, 107, 0, 0.08);
             transform: translateY(-2px);
@@ -318,8 +319,8 @@
         }
 
         .format-info {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-md);
             padding: 12px;
             margin-bottom: 20px;
@@ -411,7 +412,8 @@
             <a href="index.html" class="logo">jago<span>Vape</span></a>
             <div style="display: flex; gap: 10px;">
                 <a href="index.html" class="btn btn-add" style="width: auto; padding: 10px 25px;">Lihat Website</a>
-                <button onclick="logout()" class="btn btn-add" style="width: auto; padding: 10px 25px; border-color: rgba(255, 77, 77, 0.3); color: #ff4d4d;">Keluar</button>
+                <button onclick="logout()" class="btn "
+                    style="width: auto; padding: 10px 25px; border-color: rgba(255, 77, 77, 0.3); color: #ff4d4d;">Keluar</button>
             </div>
         </div>
     </nav>
@@ -508,7 +510,8 @@
             <div id="bulk-tab" class="tab-content">
                 <div class="form-container">
                     <div class="format-info">
-                        <p style="font-size: 13px; color: var(--text-light); margin-bottom: 10px; font-weight: 600;">Format Kolom Excel yang Didukung:</p>
+                        <p style="font-size: 13px; color: var(--text-light); margin-bottom: 10px; font-weight: 600;">
+                            Format Kolom Excel yang Didukung:</p>
                         <div style="display: flex; flex-wrap: wrap;">
                             <span class="format-badge">Nama</span>
                             <span class="format-badge">Kategori</span>
@@ -517,14 +520,17 @@
                             <span class="format-badge">URL Gambar</span>
                             <span class="format-badge">Status Stock</span>
                         </div>
-                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">*Urutan kolom bebas, script akan mendeteksi nama kolom secara otomatis.</p>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">*Urutan kolom bebas,
+                            script akan mendeteksi nama kolom secara otomatis.</p>
                     </div>
 
-                    <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleExcelSelect(event)">
-                    
+                    <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" style="display: none;"
+                        onchange="handleExcelSelect(event)">
+
                     <div id="dropZone" class="drop-zone" onclick="document.getElementById('excelInput').click()">
                         <div class="drop-zone-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="17 8 12 3 7 8"></polyline>
                                 <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -975,10 +981,10 @@
         });
 
         // --- BULK UPLOAD LOGIC (SHEETJS) ---
-        
+
         // Initialize Drag & Drop
         const dropZone = document.getElementById('dropZone');
-        
+
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, e => {
                 e.preventDefault();
@@ -1014,12 +1020,12 @@
             // UI Update
             document.getElementById('fileInfo').style.display = 'block';
             document.getElementById('detectedFileName').textContent = file.name;
-            
+
             overlay.style.display = 'flex';
             loadingText.textContent = "Membaca file...";
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
@@ -1068,7 +1074,7 @@
                         const colLower = colName.toLowerCase();
                         return mappings[key].some(keyword => colLower.includes(keyword));
                     });
-                    
+
                     if (found) {
                         let val = found[1];
                         if (key === 'harga') {
@@ -1160,7 +1166,7 @@
                     body: JSON.stringify(bulkParsedData)
                 });
                 const result = await response.json();
-                
+
                 if (result.result === 'success') {
                     showToast(`Berhasil! ${bulkParsedData.length} produk telah diunggah.`);
                     // Reset UI

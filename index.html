@@ -1,220 +1,319 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JagoVape - Premium Vape Catalog</title>
-    
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+    <title>JagoVape - Premium Vape Catalog & Store</title>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    
-    <!-- AOS Animation -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body x-data="vapeStore">
-    
+
+<body>
+
     <!-- Navbar -->
-    <nav class="navbar" :class="scrolled ? 'scrolled' : ''">
+    <nav class="navbar" id="navbar">
         <div class="container nav-container">
             <a href="index.html" class="logo">
                 Jago <span>Vape</span>
             </a>
-            
+
             <ul class="nav-menu">
-                <li><a href="#" class="active">Home</a></li>
-                <li><a href="#products">Katalog</a></li>
-                <li><a href="#lokasi">Lokasi</a></li>
-                <li><a href="login.html">Admin</a></li>
+                <li><a href="#" class="active" onclick="scrollToSection('home', event)">Home</a></li>
+                <li><a href="#products" onclick="scrollToSection('products', event)">Katalog</a></li>
+                <li><a href="#about" onclick="scrollToSection('about', event)">Tentang</a></li>
+                <li><a href="#lokasi" onclick="scrollToSection('lokasi', event)">Lokasi</a></li>
+                <li><a href="#faq" onclick="scrollToSection('faq', event)">FAQ</a></li>
+
             </ul>
-            
+
             <div class="nav-actions">
-                <div class="cart-trigger" @click="isCartOpen = true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    <span class="cart-badge" x-show="cartTotalItems > 0" x-text="cartTotalItems" x-cloak></span>
+                <div class="cart-trigger" onclick="toggleCart(true)">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="cart-badge" id="cart-badge-nav" style="display: none;">0</span>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section id="home" class="hero">
         <div class="hero-overlay"></div>
-        <div class="container hero-content" data-aos="fade-up">
-            <h1 class="font-premium">Level Up Your<br><span class="text-orange">Vaping Experience</span></h1>
-            <p>Eksplorasi koleksi device premium dan liquid dengan rasa terbaik. Pesan praktis hanya melalui WhatsApp.</p>
-            <a href="#products" class="btn btn-primary btn-lg" @click.prevent="scrollToProducts()">Lihat Katalog</a>
+        <div class="container hero-content">
+            <h1 class="font-premium">JAGO VAPE</h1>
+            <p>Original & Terpercaya di Cianjur. Eksplorasi koleksi device premium dan liquid dengan rasa terbaik.</p>
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <a href="#products" class="btn btn-primary btn-lg" onclick="scrollToSection('products', event)">Lihat
+                    Katalog</a>
+                <a href="#about" class="btn btn-lg btn-outline" onclick="scrollToSection('about', event)">Tentang
+                    Kami</a>
+            </div>
         </div>
     </section>
 
     <!-- Benefits Section -->
     <section class="container" style="padding: 60px 20px;">
-        <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
-            <div class="benefit-card" data-aos="fade-up" data-aos-delay="100" style="background: var(--bg-surface); padding: 30px; border-radius: var(--radius-md); border: var(--neon-border); text-align: center; backdrop-filter: var(--glass); box-shadow: var(--neon-glow); flex: 1;">
-                <div style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: var(--primary); border: 1px dashed var(--primary);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
                 </div>
-                <h3 class="font-premium" style="font-size: 16px; margin: 0;">100% Original</h3>
+                <h3 class="font-premium">100% Original</h3>
             </div>
-            
-            <div class="benefit-card" data-aos="fade-up" data-aos-delay="200" style="background: var(--bg-surface); padding: 30px; border-radius: var(--radius-md); border: var(--neon-border); text-align: center; backdrop-filter: var(--glass); box-shadow: var(--neon-glow); flex: 1;">
-                <div style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: var(--primary); border: 1px dashed var(--primary);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13"></rect>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
                 </div>
-                <h3 class="font-premium" style="font-size: 16px; margin: 0;">Pengiriman Cepat</h3>
+                <h3 class="font-premium">Pengiriman Cepat</h3>
             </div>
-
-            <div class="benefit-card" data-aos="fade-up" data-aos-delay="300" style="background: var(--bg-surface); padding: 30px; border-radius: var(--radius-md); border: var(--neon-border); text-align: center; backdrop-filter: var(--glass); box-shadow: var(--neon-glow); flex: 1;">
-                <div style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: var(--primary); border: 1px dashed var(--primary);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
                 </div>
-                <h3 class="font-premium" style="font-size: 16px; margin: 0;">Harga Bersahabat</h3>
+                <h3 class="font-premium">Harga Bersahabat</h3>
             </div>
         </div>
     </section>
 
-    <!-- Search & Filter -->
+    <!-- About Section -->
+    <section id="about" class="about-section container">
+        <div class="about-grid">
+            <div class="about-img">
+                <div class="img-placeholder">
+                    <img src="images/logo.jpg" alt="">
+                </div>
+                <div class="est-badge">
+                    <span>EST. 2020</span>
+                </div>
+            </div>
+            <div class="about-content">
+                <span class="badge-text">Premium Quality</span>
+                <h2 class="font-premium">Tentang jagoVape</h2>
+                <p>JagoVape hadir sebagai destinasi utama para vapers yang mencari kualitas dan keaslian produk. Kami
+                    memahami bahwa pengalaman vaping terbaik dimulai dari produk yang berkualitas tinggi dan 100%
+                    original.</p>
+                <div class="about-features">
+                    <div class="feature-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                            stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Produk 100% Original
+                    </div>
+                    <div class="feature-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                            stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Update Stok Setiap Hari
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Controls -->
     <div id="products" class="container shop-controls">
+        <div class="section-title">
+            <h2 class="font-premium">Katalog Produk</h2>
+            <div class="divider"></div>
+        </div>
         <div class="filter-wrapper">
-            <div class="filter-tabs">
-                <template x-for="cat in ['All', 'Devices', 'Liquids', 'Accessories']">
-                    <button class="filter-tab" 
-                            :class="activeCategory === cat ? 'active' : ''"
-                            @click="activeCategory = cat"
-                            x-text="cat"></button>
-                </template>
+            <div class="filter-tabs" id="filter-tabs">
+                <button class="filter-tab active" data-category="All">All</button>
+                <button class="filter-tab" data-category="Devices">Devices</button>
+                <button class="filter-tab" data-category="Liquids">Liquids</button>
+                <button class="filter-tab" data-category="Accessories">Accessories</button>
             </div>
             <div class="search-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" placeholder="Cari vape favorit..." x-model="searchQuery">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="product-search" placeholder="Cari vape favorit...">
             </div>
         </div>
     </div>
 
-    <!-- Product List -->
+    <!-- Product Grid -->
     <section class="container pb-50">
-        <!-- Skeleton Loader (Muncul saat isLoading = true) -->
-        <div class="skeleton-wrapper" x-show="isLoading" x-cloak>
-            <template x-for="i in 4">
-                <div class="skeleton-card">
-                    <div class="skeleton-img"></div>
-                    <div class="skeleton-text skeleton-title"></div>
-                    <div class="skeleton-text"></div>
-                    <div class="skeleton-text skeleton-price"></div>
-                </div>
-            </template>
+        <div id="skeleton-loader" class="skeleton-wrapper" style="display: none;">
+            <!-- Generated via JS -->
+        </div>
+        <div id="product-grid" class="product-grid">
+            <!-- Generated via JS -->
         </div>
 
-        <!-- Real Product Grid (Muncul saat isLoading = false) -->
-        <div class="product-grid" x-show="!isLoading" x-transition x-cloak>
-            <template x-for="product in filteredProducts" :key="product.id">
-                <div class="product-card" data-aos="zoom-in-up">
-                    <div class="p-header">
-                        <span class="status-badge" 
-                              :class="product.status_stock === 'ready' ? 'status-ready' : 'status-empty'"
-                              x-text="product.status_stock === 'ready' ? 'Ready Stock' : 'Habis'"></span>
-                        <img :src="product.url_gambar" :alt="product.nama" class="p-image" onerror="handleImageError(this)">
-                    </div>
-                    <div class="p-body">
-                        <span class="p-cat" x-text="product.kategori"></span>
-                        <h3 class="p-title font-premium" x-text="product.nama"></h3>
-                        <p class="p-price" x-text="formatRupiah(product.harga)"></p>
-                        <button class="btn btn-add" 
-                                style="width: 100%; border-radius: 50px; border: var(--neon-border); background: var(--bg-surface); justify-content: space-between; padding: 10px 10px 10px 20px; font-size: 14px; position: relative; overflow: hidden;"
-                                @click="checkoutWA(product)"
-                                :disabled="product.status_stock !== 'ready'">
-                            <span>Pesan Sekarang</span>
-                            <div style="background: var(--primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 0 10px var(--primary-glow);">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.301-.15-1.767-.872-2.04-.971-.272-.099-.47-.15-.667.15-.198.3-.765.961-.937 1.161-.172.199-.344.223-.646.075-.303-.15-1.275-.47-2.43-1.503-.898-.802-1.503-1.792-1.68-2.091-.172-.3-.018-.462.132-.61.135-.133.303-.352.454-.528.152-.176.203-.299.303-.499.1-.2.05-.375-.025-.525-.075-.15-.667-1.606-.913-2.196-.24-.576-.48-.498-.667-.507-.173-.008-.371-.01-.57-.01-.199 0-.522.074-.796.372-.272.298-1.042 1.018-1.042 2.481 0 1.462 1.066 2.872 1.214 3.072.148.199 2.098 3.203 5.084 4.493.71.307 1.265.49 1.696.627.712.226 1.36.194 1.872.118.571-.085 1.767-.721 2.016-1.417.248-.696.248-1.292.174-1.416-.075-.124-.273-.199-.574-.35zM12.004 20.151c-1.62 0-3.21-.433-4.605-1.25l-.332-.197-3.419.897.914-3.333-.217-.345a8.239 8.239 0 0 1-1.263-4.321c0-4.545 3.697-8.243 8.242-8.243 2.2 0 4.269.858 5.823 2.413a8.195 8.195 0 0 1 2.414 5.83c0 4.547-3.698 8.242-8.242 8.242zM12.004 2c-5.518 0-10.005 4.486-10.005 10.004 0 1.764.461 3.486 1.334 5.011L2 22l5.122-1.343a9.962 9.962 0 0 0 4.882 1.272h.005c5.517 0 10.003-4.486 10.003-10.004 0-2.673-1.04-5.185-2.929-7.073A9.92 9.92 0 0 0 12.004 2z"/></svg>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </div>
-        
-        <!-- Empty Results -->
-        <div x-show="!isLoading && filteredProducts.length === 0" class="empty-results" x-cloak>
+        <div id="pagination-container" class="pagination-container"></div>
+
+        <div id="empty-results" class="empty-results" style="display: none;">
             <p>Maaf, produk tidak ditemukan...</p>
         </div>
     </section>
 
-    <!-- Floating Cart Icon (Mobile Only) -->
-    <div class="floating-cart" x-show="cartTotalItems > 0" @click="isCartOpen = true" x-transition x-cloak>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        <span class="count" x-text="cartTotalItems"></span>
+    <!-- Locations -->
+    <section id="lokasi" class="locations-section container">
+        <div class="section-title">
+            <h2 class="font-premium">Lokasi Cabang</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="branch-grid" id="branch-grid">
+            <!-- Generated via JS or static -->
+            <div class="branch-card">
+                <h3 class="font-premium">JagoVape Sayang</h3>
+                <p>Jl. Sayang No. 12, Cianjur Kota</p>
+                <a href="#" target="_blank" class="btn btn-maps">Buka di Maps</a>
+            </div>
+            <div class="branch-card">
+                <h3 class="font-premium">JagoVape Joglo</h3>
+                <p>Jl. Joglo Raya No. 45, Cianjur</p>
+                <a href="#" target="_blank" class="btn btn-maps">Buka di Maps</a>
+            </div>
+            <div class="branch-card">
+                <h3 class="font-premium">JagoVape Panembong</h3>
+                <p>Jl. Panembong No. 88, Cianjur</p>
+                <a href="#" target="_blank" class="btn btn-maps">Buka di Maps</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq-section container">
+        <div class="section-title">
+            <h2 class="font-premium">FAQ</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="faq-container" id="faq-container">
+            <!-- Generated via JS -->
+        </div>
+    </section>
+
+    <!-- Floating Cart -->
+    <div class="floating-cart" id="floating-cart" onclick="toggleCart(true)" style="display: none;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="count" id="cart-badge-floating">0</span>
     </div>
 
-    <!-- Cart Overlay/Drawer -->
-    <div class="cart-overlay" :class="isCartOpen ? 'open' : ''" @click.self="isCartOpen = false" x-cloak>
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cart-overlay">
         <div class="cart-drawer">
             <div class="cart-header">
-                <h2>Keranjang</h2>
-                <button class="btn-close" @click="isCartOpen = false">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <h2 class="font-premium">Keranjang</h2>
+                <button class="btn-close" onclick="toggleCart(false)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
-            
+
             <div class="cart-body">
-                <template x-if="cart.length === 0">
-                    <div class="empty-cart">
-                        <p>Keranjang Anda kosong</p>
-                    </div>
-                </template>
-                
-                <template x-for="item in cart" :key="item.id">
-                    <div class="cart-item">
-                        <img :src="item.url_gambar" :alt="item.nama" class="cart-item-img" onerror="handleImageError(this)">
-                        <div class="cart-item-info">
-                            <h4 x-text="item.nama"></h4>
-                            <p class="text-orange" x-text="formatRupiah(item.harga)"></p>
-                            <div class="qty-wrapper">
-                                <button class="qty-btn" @click="updateQty(item.id, -1)">-</button>
-                                <span class="qty-val" x-text="item.qty"></span>
-                                <button class="qty-btn" @click="updateQty(item.id, 1)">+</button>
-                                <button class="btn-remove" @click="removeFromCart(item.id)">
-                                    Hapus
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
+                <div id="cart-items">
+                    <!-- Generated via JS -->
+                </div>
+
+                <!-- Branch Selector -->
+                <div class="branch-selector-wrapper" id="branch-selector-container" style="display: none;">
+                    <h4 class="font-premium" style="margin-bottom: 12px; font-size: 14px; opacity: 0.7;">Pilih Cabang
+                        Pengambilan:</h4>
+                    <select id="pickup-branch" class="branch-select">
+                        <option value="Sayang">Cabang Sayang</option>
+                        <option value="Joglo">Cabang Joglo</option>
+                        <option value="Panembong">Cabang Panembong</option>
+                    </select>
+                </div>
             </div>
-            
-            <div class="cart-footer" x-show="cart.length > 0">
+
+            <div class="cart-footer" id="cart-footer" style="display: none;">
                 <div class="cart-total">
                     <span>Total</span>
-                    <span x-text="formatRupiah(cartTotalAmount)"></span>
+                    <span id="cart-total-amount">Rp0</span>
                 </div>
-                <button class="btn btn-checkout" @click="checkoutWA()">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.301-.15-1.767-.872-2.04-.971-.272-.099-.47-.15-.667.15-.198.3-.765.961-.937 1.161-.172.199-.344.223-.646.075-.303-.15-1.275-.47-2.43-1.503-.898-.802-1.503-1.792-1.68-2.091-.172-.3-.018-.462.132-.61.135-.133.303-.352.454-.528.152-.176.203-.299.303-.499.1-.2.05-.375-.025-.525-.075-.15-.667-1.606-.913-2.196-.24-.576-.48-.498-.667-.507-.173-.008-.371-.01-.57-.01-.199 0-.522.074-.796.372-.272.298-1.042 1.018-1.042 2.481 0 1.462 1.066 2.872 1.214 3.072.148.199 2.098 3.203 5.084 4.493.71.307 1.265.49 1.696.627.712.226 1.36.194 1.872.118.571-.085 1.767-.721 2.016-1.417.248-.696.248-1.292.174-1.416-.075-.124-.273-.199-.574-.35zM12.004 20.151c-1.62 0-3.21-.433-4.605-1.25l-.332-.197-3.419.897.914-3.333-.217-.345a8.239 8.239 0 0 1-1.263-4.321c0-4.545 3.697-8.243 8.242-8.243 2.2 0 4.269.858 5.823 2.413a8.195 8.195 0 0 1 2.414 5.83c0 4.547-3.698 8.242-8.242 8.242zM12.004 2c-5.518 0-10.005 4.486-10.005 10.004 0 1.764.461 3.486 1.334 5.011L2 22l5.122-1.343a9.962 9.962 0 0 0 4.882 1.272h.005c5.517 0 10.003-4.486 10.003-10.004 0-2.673-1.04-5.185-2.929-7.073A9.92 9.92 0 0 0 12.004 2z"/></svg>
-                    Order via WhatsApp
+                <button class="btn btn-checkout" onclick="sendToWhatsApp()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M17.472 14.382c-.301-.15-1.767-.872-2.04-.971-.272-.099-.47-.15-.667.15-.198.3-.765.961-.937 1.161-.172.199-.344.223-.646.075-.303-.15-1.275-.47-2.43-1.503-.898-.802-1.503-1.792-1.68-2.091-.172-.3-.018-.462.132-.61.135-.133.303-.352.454-.528.152-.176.203-.299.303-.499.1-.2.05-.375-.025-.525-.075-.15-.667-1.606-.913-2.196-.24-.576-.48-.498-.667-.507-.173-.008-.371-.01-.57-.01-.199 0-.522.074-.796.372-.272.298-1.042 1.018-1.042 2.481 0 1.462 1.066 2.872 1.214 3.072.148.199 2.098 3.203 5.084 4.493.71.307 1.265.49 1.696.627.712.226 1.36.194 1.872.118.571-.085 1.767-.721 2.016-1.417.248-.696.248-1.292.174-1.416-.075-.124-.273-.199-.574-.35zM12.004 20.151c-1.62 0-3.21-.433-4.605-1.25l-.332-.197-3.419.897.914-3.333-.217-.345a8.239 8.239 0 0 1-1.263-4.321c0-4.545 3.697-8.243 8.242-8.243 2.2 0 4.269.858 5.823 2.413a8.195 8.195 0 0 1 2.414 5.83c0 4.547-3.698 8.242-8.242 8.242zM12.004 2c-5.518 0-10.005 4.486-10.005 10.004 0 1.764.461 3.486 1.334 5.011L2 22l5.122-1.343a9.962 9.962 0 0 0 4.882 1.272h.005c5.517 0 10.003-4.486 10.003-10.004 0-2.673-1.04-5.185-2.929-7.073A9.92 9.92 0 0 0 12.004 2z" />
+                    </svg>
+                    Pesan Sekarang
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div class="toast" :class="showToast ? 'show' : ''" x-cloak>
+    <div id="toast" class="toast">
         <p>Produk ditambahkan ke keranjang</p>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col" style="flex: 1.5;">
+                    <a href="#" class="logo" style="margin-bottom: 20px; display: inline-flex;">
+                        Jago <span>Vape</span>
+                    </a>
+                    <p>Penyedia kebutuhan vape terlengkap di Cianjur. Fokus pada kualitas, keaslian produk, dan kepuasan
+                        pelanggan.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Kontak Pusat</h4>
+                    <p>WhatsApp: +62 813-1336-2467</p>
+                    <div class="social-links" style="margin-top: 15px;">
+                        <a href="#" class="social-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg></a>
+                        <a href="#" class="social-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                            </svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 JagoVape. Original & Terpercaya di Cianjur.</p>
+            </div>
+        </div>
+    </footer>
+
     <!-- Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="app.js"></script>
-    <script>
-        AOS.init({
-            duration: 800,
-            once: true,
-            easing: 'ease-out-cubic'
-        });
-    </script>
 </body>
+
 </html>
