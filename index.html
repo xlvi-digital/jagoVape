@@ -16,6 +16,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="mobile.css" media="all"> <!-- Always load for cascade, or use media query -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF6B00">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="images/logo.jpg">
 </head>
 
 <body>
@@ -103,7 +108,7 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="about-section container">
+    <section id="about" class="about-section container reveal-on-scroll">
         <div class="about-grid">
             <div class="about-img">
                 <div class="img-placeholder">
@@ -140,7 +145,7 @@
     </section>
 
     <!-- Product Controls -->
-    <div id="products" class="container shop-controls">
+    <div id="products" class="container shop-controls reveal-on-scroll">
         <div class="section-title">
             <h2 class="font-premium">Katalog Produk</h2>
             <div class="divider"></div>
@@ -165,9 +170,6 @@
 
     <!-- Product Grid -->
     <section class="container pb-50">
-        <div id="skeleton-loader" class="skeleton-wrapper" style="display: none;">
-            <!-- Generated via JS -->
-        </div>
         <div id="product-grid" class="product-grid">
             <!-- Generated via JS -->
         </div>
@@ -180,7 +182,7 @@
     </section>
 
     <!-- Locations -->
-    <section id="lokasi" class="locations-section container">
+    <section id="lokasi" class="locations-section container reveal-on-scroll">
         <div class="section-title">
             <h2 class="font-premium">Lokasi Cabang</h2>
             <div class="divider"></div>
@@ -193,7 +195,7 @@
     </section>
 
     <!-- FAQ -->
-    <section id="faq" class="faq-section container">
+    <section id="faq" class="faq-section container reveal-on-scroll">
         <div class="section-title">
             <h2 class="font-premium">FAQ</h2>
             <div class="divider"></div>
@@ -301,6 +303,15 @@
 
     <!-- Scripts -->
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered!', reg))
+                    .catch(err => console.log('SW Registration Failed', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

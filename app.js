@@ -52,13 +52,31 @@ const STATE = {
 };
 
 // --- INITIALIZATION ---
+let deferredPrompt;
+
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
+});
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    console.log('👍 [PWA] beforeinstallprompt fired');
+    
+    // Optionally: show a dedicated installation banner/button
+});
+
+window.addEventListener('appinstalled', (event) => {
+    console.log('👍 [PWA] App successfully installed');
+    deferredPrompt = null;
 });
 
 async function initApp() {
     loadCartFromStorage();
     setupEventListeners();
+    setupScrollAnimations();
     await fetchProducts();
     renderBranches();
     renderFAQ();
@@ -81,11 +99,10 @@ function renderBranches() {
 // --- DATA FETCHING ---
 async function fetchProducts() {
     const grid = document.getElementById('product-grid');
-    const skeleton = document.getElementById('skeleton-loader');
+    if (!grid) return;
 
     STATE.isLoading = true;
-    if (skeleton) skeleton.style.display = 'grid';
-    if (grid) grid.style.display = 'none';
+    showSkeletons('product-grid', 8);
 
     try {
         const url = `${STATE.scriptURL}?key=${encodeURIComponent(SECRET_KEY)}`;
@@ -124,8 +141,26 @@ async function fetchProducts() {
         if (grid) grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Gagal memuat produk. Silakan coba lagi.</p>';
     } finally {
         STATE.isLoading = false;
-        if (skeleton) skeleton.style.display = 'none';
-        if (grid) grid.style.display = 'grid';
+        // renderProducts will handle grid display
+    }
+}
+
+function showSkeletons(containerId, count) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'skeleton-card';
+        skeleton.innerHTML = `
+            <div class="skeleton-img skeleton"></div>
+            <div class="skeleton-line short skeleton"></div>
+            <div class="skeleton-line medium skeleton"></div>
+            <div class="skeleton-line skeleton"></div>
+            <div class="skeleton-btn skeleton"></div>
+        `;
+        container.appendChild(skeleton);
     }
 }
 
@@ -162,9 +197,12 @@ function renderProducts() {
 
     if (empty) empty.style.display = 'none';
 
-    paginatedItems.forEach(p => {
+    paginatedItems.forEach((p, index) => {
         const card = document.createElement('div');
         card.className = 'product-card';
+        card.style.animation = `staggerIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards`;
+        card.style.animationDelay = `${index * 0.05}s`;
+        card.style.opacity = '0'; // Initial state for animation
         card.innerHTML = `
             <div class="p-header">
                 <span class="status-badge ${p.status_stock === 'ready' ? 'status-ready' : 'status-empty'}">
@@ -188,6 +226,26 @@ function renderProducts() {
     });
 
     renderPagination(totalPages);
+}
+
+function setupScrollAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                // Optional: Unobserve after reveal to save resources
+                // observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+    revealElements.forEach(el => observer.observe(el));
 }
 
 function renderPagination(totalPages) {
