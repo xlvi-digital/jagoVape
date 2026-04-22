@@ -65,7 +65,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
     deferredPrompt = e;
     console.log('👍 [PWA] beforeinstallprompt fired');
     
-    // Optionally: show a dedicated installation banner/button
+    // Show the installation banner
+    const installContainer = document.getElementById('pwa-install-container');
+    if (installContainer) {
+        installContainer.style.display = 'flex';
+    }
 });
 
 window.addEventListener('appinstalled', (event) => {
@@ -77,10 +81,35 @@ async function initApp() {
     loadCartFromStorage();
     setupEventListeners();
     setupScrollAnimations();
+    setupPwaUI(); // New helper
     await fetchProducts();
     renderBranches();
     renderFAQ();
     window.updateCartDisplay();
+}
+
+function setupPwaUI() {
+    const installBtn = document.getElementById('pwa-install-btn');
+    const installContainer = document.getElementById('pwa-install-container');
+    const closeBtn = document.getElementById('pwa-close-btn');
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`[PWA] User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                if (installContainer) installContainer.style.display = 'none';
+            }
+        });
+    }
+
+    if (closeBtn && installContainer) {
+        closeBtn.addEventListener('click', () => {
+            installContainer.style.display = 'none';
+        });
+    }
 }
 
 function renderBranches() {
@@ -309,7 +338,6 @@ function renderFAQ() {
                 <div class="faq-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
-            </div>
             <div class="faq-answer">
                 <p>${faq.a}</p>
             </div>
