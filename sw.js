@@ -1,12 +1,12 @@
 const CACHE_NAME = 'jagovape-cache-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/mobile.css',
-  '/app.js',
-  '/images/logo.jpg',
-  '/images/hero-bg.png'
+  './',
+  './index.html',
+  './style.css',
+  './mobile.css',
+  './app.js',
+  './images/logo.jpg',
+  './images/hero-bg.png'
 ];
 
 // Install Event
