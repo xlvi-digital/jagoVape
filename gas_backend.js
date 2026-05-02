@@ -1,231 +1,148 @@
 /**
- * jagoVape Backend - Secured Google Apps Script
- * Copy and paste this code into your Google Apps Script editor.
+ * Google Apps Script - FULL SECURITY & CRUD
+ * Link Spreadsheet: Tab 'Admin_Users' dan 'Products'
+ * Struktur Admin_Users: [Username, Hashed_Password, Token, Token_Expiry, Login_Attempts, Lock_Until]
  */
 
-const SECRET_KEY = "JAGOVAPE_SECURE_2024"; // GANTI KODE INI DAN SAMAKAN DENGAN FRONTEND
-const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
-const SHEET_NAME = "Sheet1"; // Sesuaikan dengan nama sheet Anda
-
-/**
- * GET Protection: Hanya merespons jika token valid
- */
-function doGet(e) {
-  try {
-    const token = (e.parameter.key || "").trim();
-
-    if (!token) {
-      return createErrorResponse("Key is missing in URL", 401);
-    }
-
-    if (token !== SECRET_KEY) {
-      return createErrorResponse("Key Mismatch (Check backend vs frontend)", 403);
-    }
-
-    if (e.parameter.action === "test") {
-      return createJsonResponse({ result: "success", message: "Koneksi Berhasil (GET)" });
-    }
-
-    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-    const data = sheet.getDataRange().getValues();
-    const headers = data.shift();
-
-    const result = data.map(row => {
-      let obj = {};
-      headers.forEach((h, i) => {
-        obj[h.toLowerCase().replace(/ /g, "_")] = row[i];
-      });
-      return obj;
-    });
-
-    return createJsonResponse(result);
-  } catch (error) {
-    return createErrorResponse("Gagal memproses permintaan", 500);
-  }
-}
-
-/**
- * POST Hardening: Validasi Secret Key & Sanitasi Data
- */
 function doPost(e) {
   try {
-    const postData = JSON.parse(e.postData.contents);
-    const token = (postData.key || "").trim();
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const now = new Date().getTime();
+    
+    // --- 1. LOGIKA LOGIN ---
+    if (data.action === "login") {
+      const sheet = ss.getSheetByName('Admin_Users');
+      if (!sheet) return sendResponse({ success: false, message: "Sheet 'Admin_Users' tidak ditemukan." });
+      
+      const values = sheet.getDataRange().getValues();
+      for (let i = 1; i < values.length; i++) {
+        if (values[i][0] === data.username) {
+          const attempts = values[i][4] || 0;
+          const lockUntil = values[i][5] ? new Date(values[i][5]).getTime() : 0;
+          
+          if (lockUntil > now) {
+            const waitTime = Math.ceil((lockUntil - now) / 60000);
+            return sendResponse({ success: false, message: `Akun terkunci. Tunggu ${waitTime} menit.` });
+          }
 
-    // 1. Secret Key Implementation
-    if (!token) {
-      return createErrorResponse("Key is missing in POST body", 401);
+          if (values[i][1] === data.hashedPassword) {
+            const token = Utilities.getUuid();
+            const expiry = now + (2 * 60 * 60 * 1000); // 2 Jam
+            sheet.getRange(i + 1, 3, 1, 4).setValues([[token, new Date(expiry), 0, ""]]);
+            return sendResponse({ success: true, token: token });
+          } else {
+            const newAttempts = attempts + 1;
+            let newLock = "";
+            if (newAttempts >= 5) newLock = new Date(now + (15 * 60 * 1000));
+            sheet.getRange(i + 1, 5, 1, 2).setValues([[newAttempts, newLock]]);
+            return sendResponse({ success: false, message: `Password salah (${newAttempts}/5)` });
+          }
+        }
+      }
+      return sendResponse({ success: false, message: "User tidak ditemukan." });
     }
 
-    if (token !== SECRET_KEY) {
-      return createErrorResponse("Key Mismatch (Check backend vs frontend)", 403);
+    // --- 2. LOGIKA AMBIL DATA (Publik) ---
+    if (data.action === "get_products") {
+      const sheet = ss.getSheetByName("Products");
+      const values = sheet.getDataRange().getValues();
+      const products = [];
+      for (let i = 1; i < values.length; i++) {
+        products.push({ id: values[i][0], timestamp: values[i][1], nama: values[i][2], harga: values[i][3], kategori: values[i][4], deskripsi: values[i][5], gambar: values[i][6] });
+      }
+      return sendResponse({ success: true, data: products });
     }
 
-    if (postData.action === "test") {
-      return createJsonResponse({ result: "success", message: "Koneksi Berhasil (POST)" });
+    // --- 3. VALIDASI TOKEN (Aksi Sensitif) ---
+    const auth = validateToken(data.token, ss);
+    if (!auth.success) return sendResponse(auth);
+
+    const sheet = ss.getSheetByName("Products");
+
+    // --- 4. CRUD OPERATIONS ---
+    if (data.action === "add_product") {
+      const folderId = "1s4OxBTED5MLCayyU2kJgZD8z8v86sdOC"; 
+      let imageUrl = data.gambar || "";
+      if (data.gambar && data.gambar.startsWith("data:image")) {
+        const parts = data.gambar.split(",");
+        const blob = Utilities.newBlob(Utilities.base64Decode(parts[1]), parts[0].split(":")[1].split(";")[0], "IMG_" + Date.now());
+        const file = DriveApp.getFolderById(folderId).createFile(blob);
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        imageUrl = "https://lh3.googleusercontent.com/d/" + file.getId();
+      }
+      sheet.appendRow(["PROD-" + Date.now(), new Date(), data.nama, data.harga, data.kategori, data.deskripsi, imageUrl]);
+      return sendResponse({ success: true });
     }
 
-    const action = postData.action;
-    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+    if (data.action === "update_product") {
+      const values = sheet.getDataRange().getValues();
+      for (let i = 1; i < values.length; i++) {
+        if (values[i][0] === data.id) {
+          let imageUrl = data.gambar;
+          if (data.gambar && data.gambar.startsWith("data:image")) {
+            const parts = data.gambar.split(",");
+            const blob = Utilities.newBlob(Utilities.base64Decode(parts[1]), parts[0].split(":")[1].split(";")[0], "IMG_U_" + Date.now());
+            const file = DriveApp.getFolderById("1s4OxBTED5MLCayyU2kJgZD8z8v86sdOC").createFile(blob);
+            file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+            imageUrl = "https://lh3.googleusercontent.com/d/" + file.getId();
+          }
+          sheet.getRange(i + 1, 3, 1, 5).setValues([[data.nama, data.harga, data.kategori, data.deskripsi, imageUrl]]);
+          return sendResponse({ success: true });
+        }
+      }
+    }
 
-    // 2. Action Routing & Validation
-    if (action === "editProduct") {
-      return handleEdit(sheet, postData);
-    } else if (action === "deleteProduct") {
-      return handleDelete(sheet, postData);
-    } else if (action === "uploadImage") {
-      return handleUploadImage(postData);
-    } else if (Array.isArray(postData.data)) {
-      // Bulk Upload
-      return handleBulkUpload(sheet, postData.data);
-    } else {
-      // Single Upload
-      return handleAdd(sheet, postData);
+    if (data.action === "delete_product") {
+      const values = sheet.getDataRange().getValues();
+      for (let i = 1; i < values.length; i++) {
+        if (values[i][0] === data.id) {
+          sheet.deleteRow(i + 1);
+          return sendResponse({ success: true });
+        }
+      }
+    }
+
+    if (data.action === "bulk_upload") {
+      data.data.forEach((item, index) => {
+        sheet.appendRow(["PROD-" + (Date.now() + index), new Date(), item.Nama || item.nama, item.Harga || item.harga, item.Kategori || item.kategori, item.Deskripsi || item.deskripsi, item.Gambar || item.gambar || ""]);
+      });
+      return sendResponse({ success: true });
     }
 
   } catch (error) {
-    return createErrorResponse("Gagal memproses permintaan", 500);
+    return sendResponse({ success: false, message: error.toString() });
   }
 }
 
-/**
- * Validation & Processing Functions
- */
-
-function handleAdd(sheet, data) {
-  // Input Sanitization & Type Validation
-  const sanitizedNama = sanitize(data.nama);
-  const harga = parseInt(data.harga);
-
-  if (isNaN(harga)) return createErrorResponse("Format harga tidak valid", 400);
-
-  const lastId = getLastId(sheet);
-  sheet.appendRow([
-    lastId + 1,
-    sanitizedNama,
-    data.kategori,
-    harga,
-    sanitize(data.deskripsi),
-    data.url_gambar,
-    data.status_stock,
-    new Date() // Menambahkan Timestamp
-  ]);
-
-  return createJsonResponse({ result: "success" });
-}
-
-function handleEdit(sheet, data) {
-  const harga = parseInt(data.harga);
-  if (isNaN(harga)) return createErrorResponse("Format harga tidak valid", 400);
-
-  const rows = sheet.getDataRange().getValues();
-  // Find row by ID (Column A / Index 0)
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]) === String(data.id)) {
-      // Update starting from Column B (Index 2) to Column H (8)
-      sheet.getRange(i + 1, 2, 1, 7).setValues([[
-        sanitize(data.nama),
-        data.kategori,
-        harga,
-        sanitize(data.deskripsi),
-        data.url_gambar,
-        data.status_stock,
-        new Date() // Update Timestamp
-      ]]);
-      return createJsonResponse({ result: "success", message: "Produk berhasil diperbarui" });
+function validateToken(token, ss) {
+  if (!token) return { success: false, message: "Token Kosong", code: 403 };
+  const sheet = ss.getSheetByName('Admin_Users');
+  const values = sheet.getDataRange().getValues();
+  const now = new Date().getTime();
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][2] === token) {
+      const expiry = new Date(values[i][3]).getTime();
+      if (now > expiry) return { success: false, message: "Token Expired", code: 403, expired: true };
+      return { success: true };
     }
   }
-  return createErrorResponse("Produk dengan ID " + data.id + " tidak ditemukan", 404);
+  return { success: false, message: "Token Invalid", code: 403 };
 }
 
-function handleDelete(sheet, data) {
-  const rows = sheet.getDataRange().getValues();
-  // Find row by ID (Column A / Index 0)
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]) === String(data.id)) {
-      sheet.deleteRow(i + 1);
-      return createJsonResponse({ result: "success", message: "Produk berhasil dihapus" });
-    }
-  }
-  return createErrorResponse("Produk dengan ID " + data.id + " tidak ditemukan", 404);
+function sendResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * Utility Functions
- */
-
-// Input Sanitization: Mencegah XSS & karakter ilegal
-function sanitize(input) {
-  if (typeof input !== 'string') return input;
-  return input
-    .replace(/<[^>]*>?/gm, '') // Hapus HTML Tags
-    .replace(/[&"']/g, function (m) { // Escape special chars
-      return { '&': '&amp;', '"': '&quot;', "'": '&#39;' }[m];
-    });
-}
-
-function createJsonResponse(data) {
-  return ContentService.createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function createErrorResponse(message, code) {
-  // Error Handling: Jangan tampilkan pesan sistem detail
-  return ContentService.createTextOutput(JSON.stringify({
-    result: "error",
-    error: message,
-    status: code
-  }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function getLastId(sheet) {
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return 0;
-  return Math.max(...data.slice(1).map(r => r[0]));
-}
-
-function handleBulkUpload(sheet, dataArray) {
-  const lastId = getLastId(sheet);
-  const timestamp = new Date();
-  const rowsToAdd = dataArray.map((data, index) => [
-    lastId + index + 1,
-    sanitize(data.nama),
-    data.kategori,
-    parseInt(data.harga) || 0,
-    sanitize(data.deskripsi),
-    data.url_gambar,
-    data.status_stock,
-    timestamp
-  ]);
-
-  if (rowsToAdd.length > 0) {
-    sheet.getRange(sheet.getLastRow() + 1, 1, rowsToAdd.length, 8).setValues(rowsToAdd);
-  }
-
-  return createJsonResponse({ result: "success", count: rowsToAdd.length });
-}
-
-function handleUploadImage(data) {
-  try {
-    const folder = getOrCreateFolder("jagoVape_Images");
-    const blob = Utilities.newBlob(Utilities.base64Decode(data.data), data.mimeType, data.filename);
-    const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-
-    return createJsonResponse({
-      result: "success",
-      url: "https://lh3.googleusercontent.com/d/" + file.getId()
-    });
-  } catch (e) {
-    return createErrorResponse("Gagal mengunggah gambar ke Drive", 500);
+function setupBackend() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const userSheet = ss.getSheetByName("Admin_Users") || ss.insertSheet("Admin_Users");
+  userSheet.clear();
+  userSheet.appendRow(["Username", "Hashed_Password", "Token", "Token_Expiry", "Login_Attempts", "Lock_Until"]);
+  userSheet.appendRow(["admin", "ef92b778bafe771e89245b89ec8c9914c0353c7a050f69d30009c95d9e50f38c", "", "", 0, ""]);
+  
+  if (!ss.getSheetByName("Products")) {
+    const prodSheet = ss.insertSheet("Products");
+    prodSheet.appendRow(["ID", "Timestamp", "Nama Produk", "Harga", "Kategori", "Deskripsi", "URL Gambar"]);
   }
 }
-
-function getOrCreateFolder(folderName) {
-  const folders = DriveApp.getFoldersByName(folderName);
-  if (folders.hasNext()) return folders.next();
-  return DriveApp.createFolder(folderName);
-}
-
-// ... original utility functions follow ...

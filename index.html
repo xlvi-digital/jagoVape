@@ -1,331 +1,223 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JagoVape - Premium Vape Catalog & Store</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800&family=Playfair+Display:wght@700&display=swap"
-        rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="mobile.css" media="all"> <!-- Always load for cascade, or use media query -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#FF6B00">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="images/logo.jpg">
+    <title>Vape AH - Premium Vape Catalog</title>
+    <meta name="description" content="Vape AH adalah destinasi terpercaya untuk semua kebutuhan vaping Anda. Dapatkan device terbaru dan e-liquid premium dengan kualitas terbaik.">
+    <meta name="keywords" content="vape, e-liquid, pod, mod, vape store, beli vape">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💨</text></svg>">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar" id="navbar">
-        <div class="container nav-container">
-            <a href="/jagoVape/index.html" class="logo">
-                Jago <span>Vape</span>
-            </a>
-
-            <ul class="nav-menu">
-                <li><a href="/jagoVape/index.html" class="active">Home</a></li>
-                <li><a href="#products" onclick="scrollToSection('products', event)">Katalog</a></li>
-                <li><a href="#about" onclick="scrollToSection('about', event)">Tentang</a></li>
-                <li><a href="#lokasi" onclick="scrollToSection('lokasi', event)">Lokasi</a></li>
-                <li><a href="#faq" onclick="scrollToSection('faq', event)">FAQ</a></li>
-            </ul>
+    <!-- Toast Container -->
+    <div id="storeToastContainer" class="toast-container"></div>
+    
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container nav-content">
+            <a href="#" class="logo text-neon" style="text-decoration: none;">VAPE AH</a>
+            
+            <div class="nav-links">
+                <a href="#">Home</a>
+                <a href="#products">Produk</a>
+                <a href="#about">Tentang</a>
+                <a href="#contact">Hubungi Kami</a>
+            </div>
 
             <div class="nav-actions">
-                <div class="cart-trigger" onclick="toggleCart(true)">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    <span class="cart-badge" id="cart-badge-nav" style="display: none;">0</span>
+                <div class="cart-icon-wrapper" onclick="toggleCart()">
+                    <i data-lucide="shopping-cart"></i>
+                    <span id="cartBadge" class="cart-badge">0</span>
+                </div>
+                <div class="hamburger" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
             </div>
         </div>
     </nav>
 
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="#" onclick="toggleMobileMenu()">Home</a>
+        <a href="#products" onclick="toggleMobileMenu()">Produk</a>
+        <a href="#about" onclick="toggleMobileMenu()">Tentang</a>
+        <a href="#contact" onclick="toggleMobileMenu()">Hubungi Kami</a>
+    </div>
+
+    <!-- Cart Drawer -->
+    <div id="cartOverlay" class="cart-overlay" onclick="toggleCart()"></div>
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3 style="font-size: 1.2rem;">Keranjang Belanja</h3>
+            <div class="qty-btn" style="cursor: pointer;" onclick="toggleCart()">
+                <i data-lucide="x"></i>
+            </div>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <!-- Items injected via JS -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total Estimasi:</span>
+                <span id="cartTotal" class="text-neon">Rp 0</span>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkoutWhatsApp()">
+                <i data-lucide="message-circle"></i>
+                Pesan via WhatsApp
+            </button>
+        </div>
+    </div>
+
     <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-            <h1 class="font-premium">JAGO VAPE</h1>
-            <p>Original & Terpercaya di Cianjur. Eksplorasi koleksi device premium dan liquid dengan rasa terbaik.</p>
-            <div style="display: flex; gap: 15px; margin-top: 20px;">
-                <a href="#products" class="btn btn-primary btn-lg" onclick="scrollToSection('products', event)">Lihat
-                    Katalog</a>
-                <a href="#about" class="btn btn-lg btn-outline" onclick="scrollToSection('about', event)">Tentang
-                    Kami</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Benefits Section -->
-    <section class="container" style="padding: 60px 20px;">
-        <div class="benefits-grid">
-            <div class="benefit-card">
-                <div class="benefit-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
+    <header class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-image-container fade-in">
+                    <img src="assets/images/hero_vape_device_1777533836728.png" alt="Vape Device" class="hero-image">
                 </div>
-                <h3 class="font-premium">100% Original</h3>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="1" y="3" width="15" height="13"></rect>
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                    </svg>
-                </div>
-                <h3 class="font-premium">Pengiriman Cepat</h3>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                </div>
-                <h3 class="font-premium">Harga Bersahabat</h3>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about-section container reveal-on-scroll">
-        <div class="about-grid">
-            <div class="about-img">
-                <div class="img-placeholder">
-                    <img src="images/logo.jpg" alt="">
-                </div>
-                <div class="est-badge">
-                    <span>EST. 2020</span>
-                </div>
-            </div>
-            <div class="about-content">
-                <span class="badge-text">Premium Quality</span>
-                <h2 class="font-premium">Tentang jagoVape</h2>
-                <p>JagoVape hadir sebagai destinasi utama para vapers yang mencari kualitas dan keaslian produk. Kami
-                    memahami bahwa pengalaman vaping terbaik dimulai dari produk yang berkualitas tinggi dan 100%
-                    original.</p>
-                <div class="about-features">
-                    <div class="feature-item">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
-                            stroke-width="3">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        Produk 100% Original
-                    </div>
-                    <div class="feature-item">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
-                            stroke-width="3">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        Update Stok Setiap Hari
+                <div class="hero-content fade-in reveal" style="animation-delay: 0.2s">
+                    <p class="hero-sub">Vape AH - Your Daily Cloud Partner</p>
+                    <h1 class="hero-title">EVOLVE <br> YOUR <span class="text-neon">VAPE</span></h1>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;justify-content: flex-start;">
+                        <a href="#products" class="btn btn-primary">
+                            Shop Now
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            Our Story
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </header>
 
-    <!-- Product Controls -->
-    <div id="products" class="container shop-controls reveal-on-scroll">
-        <div class="section-title">
-            <h2 class="font-premium">Katalog Produk</h2>
-            <div class="divider"></div>
+    <!-- Search & Filters -->
+    <div class="container">
+        <div class="search-container glass reveal" style="margin: 40px auto 0;">
+            <input type="text" id="searchInput" class="search-input" placeholder="Find your flavor...">
         </div>
-        <div class="filter-wrapper">
-            <div class="filter-tabs" id="filter-tabs">
-                <button class="filter-tab active" data-category="All">All</button>
-                <button class="filter-tab" data-category="Devices">Devices</button>
-                <button class="filter-tab" data-category="Liquids">Liquids</button>
-                <button class="filter-tab" data-category="Accessories">Accessories</button>
-            </div>
-            <div class="search-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" id="product-search" placeholder="Cari vape favorit...">
-            </div>
+
+        <div class="filters reveal" id="categoryFilters">
+            <button class="filter-pill active" data-category="All">All</button>
+            <button class="filter-pill" data-category="Devices">Devices</button>
+            <button class="filter-pill" data-category="Liquids">Liquids</button>
+            <button class="filter-pill" data-category="Pods">Pods</button>
+            <button class="filter-pill" data-category="Coils">Coils</button>
         </div>
     </div>
 
     <!-- Product Grid -->
-    <section class="container pb-50">
-        <div id="product-grid" class="product-grid">
-            <!-- Generated via JS -->
-        </div>
-
-        <div id="pagination-container" class="pagination-container"></div>
-
-        <div id="empty-results" class="empty-results" style="display: none;">
-            <p>Maaf, produk tidak ditemukan...</p>
+    <section id="products" class="container" style="margin-top: -80px;">
+        <h2 class="reveal" style="margin-bottom: 40px; font-size: 2rem;">Featured Products</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be injected here -->
         </div>
     </section>
 
-    <!-- Locations -->
-    <section id="lokasi" class="locations-section container reveal-on-scroll">
-        <div class="section-title">
-            <h2 class="font-premium">Lokasi Cabang</h2>
-            <div class="divider"></div>
-        </div>
-        <div class="branch-grid" id="branch-grid">
-            <!-- Generated via JS or static -->
-            <!-- Dynamic branches loaded via app.js -->
-        </div>
+    <!-- About Section -->
+    <section class="container glass reveal" style="border-radius: 40px; text-align: center; margin-bottom: 80px;">
+        <div style="max-width: 700px; margin: 0 auto; padding: 40px;">
+            <div class="text-neon" style="margin-bottom: 20px;">
+                <i data-lucide="info" style="width: 48px; height: 48px;"></i>
+            </div>
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Tentang Vape AH</h2>
+            <p style="color: var(--text-gray); font-size: 1.1rem;">
+                Vape AH adalah destinasi terpercaya untuk semua kebutuhan vaping Anda. Kami menyediakan koleksi device terbaru dan e-liquid premium dengan kualitas terbaik untuk meningkatkan pengalaman vaping Anda ke level selanjutnya.
+            </p>
         </div>
     </section>
 
-    <!-- FAQ -->
-    <section id="faq" class="faq-section container reveal-on-scroll">
-        <div class="section-title">
-            <h2 class="font-premium">FAQ</h2>
-            <div class="divider"></div>
-        </div>
-        <div class="faq-container" id="faq-container">
-            <!-- Generated via JS -->
+    <!-- FAQ Section -->
+    <section class="container">
+        <h2 class="reveal" style="font-size: 2.5rem; margin-bottom: 40px; text-align: center;">Frequently Asked Questions</h2>
+        <div style="max-width: 800px; margin: 0 auto;" id="faqContainer">
+            <div class="faq-item reveal">
+                <div class="faq-header">
+                    <span>Apakah produk ready stock?</span>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="faq-content">
+                    <p style="color: var(--text-gray);">Ya, semua produk yang ditampilkan di website kami tersedia dalam stok siap kirim.</p>
+                </div>
+            </div>
+            <div class="faq-item reveal">
+                <div class="faq-header">
+                    <span>Bagaimana cara order?</span>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="faq-content">
+                    <p style="color: var(--text-gray);">Anda bisa klik tombol "Order Sekarang" atau hubungi kami melalui WhatsApp untuk pemesanan cepat.</p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Floating Cart -->
-    <div class="floating-cart" id="floating-cart" onclick="toggleCart(true)" style="display: none;">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span class="count" id="cart-badge-floating">0</span>
-    </div>
-
-    <!-- Cart Drawer -->
-    <div class="cart-overlay" id="cart-overlay">
-        <div class="cart-drawer">
-            <div class="cart-header">
-                <h2 class="font-premium">Keranjang</h2>
-                <button class="btn-close" onclick="toggleCart(false)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="cart-body">
-                <div id="cart-items">
-                    <!-- Generated via JS -->
+    <!-- CTA & Contact -->
+    <section class="container">
+        <div class="cta-grid">
+            <div class="contact-card glass reveal">
+                <h3 style="font-size: 1.8rem; margin-bottom: 20px;">Hubungi Kami</h3>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="phone" class="text-neon"></i>
+                        <span>+62 813-1336-2467</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="instagram" class="text-neon"></i>
+                        <span>@vape.ah</span>
+                    </div>
                 </div>
-
-                <!-- Branch Selector -->
-                <div class="branch-selector-wrapper" id="branch-selector-container" style="display: none;">
-                    <h4 class="font-premium" style="margin-bottom: 12px; font-size: 14px; opacity: 0.7;">Pilih Cabang
-                        Pengambilan:</h4>
-                    <select id="pickup-branch" class="branch-select">
-                        <option value="" disabled selected>Pilih Lokasi Pengambilan</option>
-                        <!-- Dynamic options via JS -->
-                    </select>
+                <a href="https://wa.me/6281313362467" class="btn btn-primary" target="_blank" style="width: 100%; justify-content: center;">
+                    Chat WhatsApp
+                </a>
+            </div>
+            
+            <div class="cta-card reveal">
+                <h3 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;">Temukan Vape Favoritmu Sekarang</h3>
+                <p style="margin-bottom: 30px; opacity: 0.9;">Jelajahi koleksi premium kami dan nikmati pengalaman vaping terbaik.</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="#products" class="btn glass" style="background: rgba(255,255,255,0.15);">Lihat Produk</a>
+                    <a href="#" class="btn btn-primary" style="background: white; color: var(--primary-purple);">Order Sekarang</a>
                 </div>
             </div>
-
-            <div class="cart-footer" id="cart-footer" style="display: none;">
-                <div class="cart-total">
-                    <span>Total</span>
-                    <span id="cart-total-amount">Rp0</span>
-                </div>
-                <button class="btn btn-checkout" onclick="sendToWhatsApp()">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M17.472 14.382c-.301-.15-1.767-.872-2.04-.971-.272-.099-.47-.15-.667.15-.198.3-.765.961-.937 1.161-.172.199-.344.223-.646.075-.303-.15-1.275-.47-2.43-1.503-.898-.802-1.503-1.792-1.68-2.091-.172-.3-.018-.462.132-.61.135-.133.303-.352.454-.528.152-.176.203-.299.303-.499.1-.2.05-.375-.025-.525-.075-.15-.667-1.606-.913-2.196-.24-.576-.48-.498-.667-.507-.173-.008-.371-.01-.57-.01-.199 0-.522.074-.796.372-.272.298-1.042 1.018-1.042 2.481 0 1.462 1.066 2.872 1.214 3.072.148.199 2.098 3.203 5.084 4.493.71.307 1.265.49 1.696.627.712.226 1.36.194 1.872.118.571-.085 1.767-.721 2.016-1.417.248-.696.248-1.292.174-1.416-.075-.124-.273-.199-.574-.35zM12.004 20.151c-1.62 0-3.21-.433-4.605-1.25l-.332-.197-3.419.897.914-3.333-.217-.345a8.239 8.239 0 0 1-1.263-4.321c0-4.545 3.697-8.243 8.242-8.243 2.2 0 4.269.858 5.823 2.413a8.195 8.195 0 0 1 2.414 5.83c0 4.547-3.698 8.242-8.242 8.242zM12.004 2c-5.518 0-10.005 4.486-10.005 10.004 0 1.764.461 3.486 1.334 5.011L2 22l5.122-1.343a9.962 9.962 0 0 0 4.882 1.272h.005c5.517 0 10.003-4.486 10.003-10.004 0-2.673-1.04-5.185-2.929-7.073A9.92 9.92 0 0 0 12.004 2z" />
-                    </svg>
-                    Pesan Sekarang
-                </button>
-            </div>
         </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <p>Produk ditambahkan ke keranjang</p>
-    </div>
-
-    <!-- PWA Install Banner (Hidden by default) -->
-    <div id="pwa-install-container" class="pwa-install-banner" style="display: none;">
-        <div class="pwa-content">
-            <img src="images/logo.jpg" alt="Logo">
-            <div>
-                <strong>Install JagoVape</strong>
-                <p>Akses lebih cepat & offline</p>
-            </div>
-        </div>
-        <div class="pwa-actions">
-            <button id="pwa-install-btn" class="btn btn-primary btn-sm">Install</button>
-            <button id="pwa-close-btn" class="btn-close-pwa">×</button>
-        </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col" style="flex: 1.5;">
-                    <a href="#" class="logo" style="margin-bottom: 20px; display: inline-flex;">
-                        Jago <span>Vape</span>
-                    </a>
-                    <p>Penyedia kebutuhan vape terlengkap di Cianjur. Fokus pada kualitas, keaslian produk, dan kepuasan
-                        pelanggan.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Kontak Pusat</h4>
-                    <p>WhatsApp: +62 813-1336-2467</p>
-                    <div class="social-links" style="margin-top: 15px;">
-                        <a href="#" class="social-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                            </svg></a>
-                        <a href="#" class="social-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
-                            </svg></a>
-                    </div>
-                </div>
+            <div class="logo text-gradient" style="font-size: 2rem;">VAPE AH</div>
+            <div class="footer-nav">
+                <a href="#">Home</a>
+                <a href="#products">Produk</a>
+                <a href="#">Kontak</a>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 JagoVape. Original & Terpercaya di Cianjur.</p>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 30px;">
+                <i data-lucide="instagram" style="cursor: pointer;"></i>
+                <i data-lucide="message-circle" style="cursor: pointer;"></i>
             </div>
+            <p style="color: var(--text-gray); font-size: 0.9rem;">&copy; 2024 Vape AH. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="app.js"></script>
+    <!-- Back to Top -->
+    <a href="#" class="back-to-top" id="backToTop" aria-label="Back to Top">
+        <i data-lucide="arrow-up"></i>
+    </a>
+
+    <script src="assets/js/animations.js"></script>
+    <script src="assets/js/app.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('SW Registered!', reg))
-                    .catch(err => console.log('SW Registration Failed', err));
-            });
-        }
+        // Initialize Lucide Icons
+        lucide.createIcons();
     </script>
 </body>
-
 </html>
